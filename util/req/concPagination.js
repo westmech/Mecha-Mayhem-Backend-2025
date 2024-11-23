@@ -1,6 +1,28 @@
 const { removeDuplicates } = require("../transformers/removeDuplicates");
 const { requestRobotEvents } = require("./requestRobotEvents");
 
+// processes API responses and removes duplicates
+async function paginationHelper(url, params) {
+    try {
+        if (url !== null) {
+            const response = await requestRobotEvents(url, params);
+            const resMeta = response.data.meta;
+            let resData = response.data.data;
+
+            // Filter out undefined values
+            resData = resData.filter(
+                (item) => item !== undefined
+            );
+            // Remove duplicates from concatenated data
+            resData = removeDuplicates(resData);
+            
+            return {resMeta, resData};
+        }
+    } catch (error) {
+        console.error("Error fetching info from API:", error);
+    }
+}
+
 // recursively concatenates paginated API results and removes duplicates
 async function concPagination(url) {
     try {
@@ -27,4 +49,4 @@ async function concPagination(url) {
     }
 }
 
-module.exports = { concPagination };
+module.exports = { paginationHelper, concPagination };
