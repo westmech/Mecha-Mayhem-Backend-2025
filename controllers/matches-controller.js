@@ -1,6 +1,6 @@
 const { transformMatches } = require("../util/transformers/transformMatches");
 const { yearToKeyMap, divToKeyMap } = require("../util/maps");
-const { paginationHelper } = require("../util/req/concPagination")
+const { paginationHelper } = require("../util/req/concPagination");
 
 const streamAllMatches = async (req, res) => {
     const year = req.params.year;
