@@ -1,8 +1,6 @@
 const { transformMatches } = require("../util/transformers/transformMatches");
 const { yearToKeyMap, divToKeyMap } = require("../util/maps");
 const { paginationHelper } = require("../util/req/concPagination")
-const { requestRobotEvents } = require("../util/req/requestRobotEvents")
-const { removeDuplicates } = require("../util/transformers/removeDuplicates");
 
 const streamAllMatches = async (req, res) => {
     const year = req.params.year;
@@ -39,9 +37,9 @@ const streamAllMatches = async (req, res) => {
 
     try {
         // Getting streams
+        let matchesArr = [];
+        let reachedEndOfMatches = false;
         const {resMeta, resData: matches} = await paginationHelper(url, params);
-
-        console.log(resMeta);
 
         // Not at last page of current round, so nextPage is currentPage + 1
         if (resMeta.current_page < resMeta.last_page) {
@@ -49,18 +47,14 @@ const streamAllMatches = async (req, res) => {
         } else {
             // If we are done with current round, go to next round
             nextRoundIndex++;
-            
-            // checking if we have finished all the round
-            if (nextRoundIndex == orderOfIteration.length) {
-                // indicating we have finished retrieving the streams
-                res.end();
-            } 
-
             nextPage = 1;
+
+            // Checking if we have reached the end of the matches
+            if (nextRoundIndex == orderOfIteration.length) {
+                reachedEndOfMatches = true;
+            } 
         }
 
-
-        let matchesArr = [];
         if (matches !== undefined && matches !== null) {
             for (const match of matches) {
                 if (match !== undefined && match !== null) {
@@ -72,7 +66,6 @@ const streamAllMatches = async (req, res) => {
     
                     if (transformedMatch[0]) {
                         matchesArr.push(transformedMatch[0]);
-                        await new Promise((resolve) => setTimeout(resolve, 0)); // Simulate real-time streaming
                     }
                 }
             }
@@ -81,7 +74,8 @@ const streamAllMatches = async (req, res) => {
         res.json({
             data: matchesArr,
             nextPage: nextPage,
-            nextRoundIndex: nextRoundIndex
+            nextRoundIndex: nextRoundIndex,
+            reachedEndOfMatches: reachedEndOfMatches
         });
 
         // Close the connection when done
@@ -92,55 +86,6 @@ const streamAllMatches = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch matches" });
     }
 };
-
-// const streamAllMatches = async (req, res) => {
-//     const year = req.params.year;
-//     const div = req.params.division;
-//     let matchLog = null;
-
-//     // An adjustment to the weird numbering system within RobotEvents
-//     const orderOfIteration = [1, 2, 6, 3, 4, 5];
-
-//     // Set headers for SSE
-//     res.setHeader("Content-Type", "text/event-stream");
-//     res.setHeader("Cache-Control", "no-cache");
-//     res.setHeader("Connection", "keep-alive");
-
-//     try {
-//         for (const nextRoundType of orderOfIteration) {
-//             // Request from RobotEvents API
-//             const matches = await concPagination(
-//                 `https://www.robotevents.com/api/v2/events/${yearToKeyMap[year]}/divisions/${divToKeyMap[div]}/matches?round%5B%5D=${nextRoundType}`
-//             );
-
-//             if (matches !== undefined && matches !== null) {
-//                 for (const match of matches) {
-//                     if (match !== undefined && match !== null) {
-//                         const transformedMatch = await transformMatches(
-//                             [match],
-//                             year,
-//                             div
-//                         );
-        
-//                         if (transformedMatch[0]) {
-//                             res.write(
-//                                 `data: ${JSON.stringify(transformedMatch[0])}\n\n`
-//                             );
-//                             await new Promise((resolve) => setTimeout(resolve, 0)); // Simulate real-time streaming
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-
-//         // Close the connection when done
-//         res.end();
-//     } catch (error) {
-//         console.error("Error fetching matches", error);
-//         console.log("matchLog", matchLog);
-//         res.status(500).json({ error: "Failed to fetch matches" });
-//     }
-// };
 
 const getAllMatches = async (req, res) => {
     const year = req.params.year;
