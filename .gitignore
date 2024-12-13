@@ -4,5 +4,5 @@ node_modules
 # misc
 .env
 .env.test
-config/mecha-mayhem-2024-firebase-adminsdk-munle-f3998c95a6.json
+src/config/mecha-mayhem-2024-firebase-adminsdk-munle-f3998c95a6.json
 dist

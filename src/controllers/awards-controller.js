@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-const { db } = require("../src/config/firebaseConfig");
+const { db } = require("../config/firebaseConfig");
 const { yearToKeyMap } = require("../util/maps");
 const { requestRobotEvents } = require("../util/req/requestRobotEvents");
 const { transformAwards } = require("../util/transformers/transformAwards");
