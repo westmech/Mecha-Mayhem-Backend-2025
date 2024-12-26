@@ -41,7 +41,7 @@ const photosRouter = require('./views/photos-router');
 const awardsRouter = require('./views/awards-router');
 const teamsRouter = require('./views/teams-router');
 const matchRouter = require('./views/matches-router');
-
+const apiRouter = require('./views/api');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -56,6 +56,7 @@ app.use('/photos', photosRouter);
 app.use('/awards', awardsRouter);
 app.use('/teams', teamsRouter);
 app.use('/matches', matchRouter)
+app.use('/api', apiRouter);
 
 module.exports = app;
 

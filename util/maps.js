@@ -1,7 +1,8 @@
 const yearToKeyMap = {
     2023: 47800,
     2024: 51496,
-};
+    2025: 55504
+}; // UPDATE WITH EACH NEW YEAR
 
 const divToKeyMap = {
     prairies: 1,
