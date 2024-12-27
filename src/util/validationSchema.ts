@@ -1,6 +1,9 @@
 // schema to validate the request body against
 // https://express-validator.github.io/docs/api/check-schema#schema
 export const userValidationSchema = {
+	email: {
+		isEmail: true
+	},
 	username: {
 		isLength: {
 			options: {

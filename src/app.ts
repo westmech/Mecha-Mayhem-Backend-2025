@@ -35,6 +35,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
+// AUTH
 passport.use(jwtStrategy);
 
 // ROUTERS

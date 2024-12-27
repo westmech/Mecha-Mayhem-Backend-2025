@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { validationResult, matchedData } from "express-validator";
 import { generateJWT } from "../strategies/jwt-auth";
+import { auth } from "../config/firebaseConfig";
 import { mockData } from "../util/mockData";
 
 export const createJudgesAccount = async (req: Request, res: Response) => {
@@ -13,9 +14,18 @@ export const createJudgesAccount = async (req: Request, res: Response) => {
         const data = matchedData(req);
         console.log(data);
 
-        // do something with data
         try {
+            const { email, username, password } = req.body;
+
             // add judges account
+            const user = await auth.createUser({
+                email,
+                displayName: username,
+                password
+            })
+            
+            console.log(user);
+            res.status(200).send({msg: `User Created with username: ${username}`});
         } catch (err) {
             console.log(err);
             res.status(400).send(err); 
@@ -30,14 +40,12 @@ export const loginJudge = (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     try {
+        // mock data
         const findUser = mockData.find((x) => x.username === username);
         if (!findUser) throw new Error("User not found");
         if (findUser.password !== password) throw new Error("Incorrect password");
 
-        // const expiresIn = 60; // cookie expires in a minute, expiresIn is in seconds
-
-        const expiresIn = 10;
-
+        const expiresIn = 60; // cookie expires in a minute, expiresIn is in seconds
         const token = generateJWT(findUser.id, expiresIn);
 
         res.cookie('jwt', token, {
