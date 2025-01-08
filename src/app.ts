@@ -2,8 +2,6 @@ const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
-import passport from 'passport'; // passport takes care of mapping the user that is logging in with their sessionID
-import { jwtStrategy } from './strategies/jwt-auth';
 
 // FIREBASE INIT
 require('./config/firebaseConfig');
@@ -35,9 +33,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-// AUTH
-passport.use(jwtStrategy);
-
 // ROUTERS
 const indexRouter = require('./views/index');
 const usersRouter = require('./views/users');
@@ -45,7 +40,7 @@ const photosRouter = require('./views/photos-router');
 const awardsRouter = require('./views/awards-router');
 const teamsRouter = require('./views/teams-router');
 const matchRouter = require('./views/matches-router');
-import judgesRouter from './views/judges-router';
+import judgesTeamsRouter from './views/judges-teams-router';
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -60,7 +55,7 @@ app.use('/photos', photosRouter);
 app.use('/awards', awardsRouter);
 app.use('/teams', teamsRouter);
 app.use('/matches', matchRouter);
-app.use('/judges', judgesRouter);
+app.use('/judges-teams', judgesTeamsRouter);
 
 module.exports = app;
 

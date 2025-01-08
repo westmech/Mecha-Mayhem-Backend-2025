@@ -2,7 +2,7 @@ const fs = require("fs").promises; // Using fs.promises for async file operation
 const path = require("path");
 const { concPagination } = require("./concPagination");
 const { yearToKeyMap } = require("../maps");
-const { transformTeams } = require("../transformers/transformTeams");
+const { transformTeams, transformRegisteredTeams } = require("../transformers/transformTeams");
 
 const CACHE_FILE_PATH = path.join(__dirname, "teamCache.json"); // Path to the cache file
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
@@ -83,4 +83,15 @@ async function getAllTeamsData(year) {
     }
 }
 
-module.exports = { getTeamInfo, getAllTeamsData };
+async function getAllRegisteredTeamsData(level, event) {
+    try {
+        const teamData = await concPagination(
+            `https://www.robotevents.com/api/v2/events/${event}/teams?myTeams=false`
+        );
+        return transformRegisteredTeams(level, teamData);
+    } catch (error) {
+        console.error("Error fetching all teams data from API", error);
+    }
+}
+
+module.exports = { getTeamInfo, getAllTeamsData, getAllRegisteredTeamsData };
