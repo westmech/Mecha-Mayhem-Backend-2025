@@ -40,7 +40,7 @@ const photosRouter = require('./views/photos-router');
 const awardsRouter = require('./views/awards-router');
 const teamsRouter = require('./views/teams-router');
 const matchRouter = require('./views/matches-router');
-import judgesTeamsRouter from './views/judges-teams-router';
+import judgesPortalRouter from './views/judges-portal-router';
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -55,7 +55,7 @@ app.use('/photos', photosRouter);
 app.use('/awards', awardsRouter);
 app.use('/teams', teamsRouter);
 app.use('/matches', matchRouter);
-app.use('/judges-teams', judgesTeamsRouter);
+app.use('/judges-portal', judgesPortalRouter);
 
 module.exports = app;
 

@@ -2,6 +2,7 @@ const { transformMatches } = require("../util/transformers/transformMatches");
 const { yearToKeyMap, gradeToKeyMap, divToKeyMap } = require("../util/maps");
 const { getAllTeamsData, getTeamInfo } = require("../util/req/getTeamInfo");
 const { requestRobotEvents } = require("../util/req/requestRobotEvents");
+const { db } = require("../config/firebaseConfig")
 
 // route to retrieve team information for a season
 const getInfo = async (req, res) => {
@@ -152,4 +153,55 @@ const getOPR = async (req, res) => {
     }
 };
 
-module.exports = { getInfo, getAllTeams, getOneTeam, getOPR };
+
+const filteredTeamsRef = db.collection("2025").doc("teams-selected-for-interview");
+
+const validateSelectedTeam = async (teamID) => {
+    // first validate that the team is a selected team
+    const filteredTeamsDoc = await filteredTeamsRef.get();
+    const filteredTeams = filteredTeamsDoc.data();
+
+    let isSelectedTeam = false;
+    let selectedTeamData = {};
+
+    // console.log(filteredTeams);
+    
+    for (const [key, values] of Object.entries(filteredTeams)) {
+        if (key === teamID) {
+            isSelectedTeam = true;
+            selectedTeamData = {[key]: values};
+        }
+    }
+
+    return {isSelectedTeam, selectedTeamData};
+}
+
+const getSelectedTeam = async (req, res, next) => {
+    try {
+        const { isSelectedTeam, selectedTeamData } = await validateSelectedTeam(req.params.teamID);
+        isSelectedTeam ? res.status(200).send(selectedTeamData) : res.status(400).send({message: "You have not been selected for an interview"});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+const changeSelectedTeamStatus = async (req, res, next) => {
+    try {
+        const { isSelectedTeam, selectedTeamData } = await validateSelectedTeam(req.params.teamID);
+        if (isSelectedTeam) {
+            const newStatus = req.body.newStatus;
+            Object.values(selectedTeamData)[0].ready = newStatus;
+            console.log(selectedTeamData);
+            filteredTeamsRef.update(selectedTeamData);
+            res.status(200).send(selectedTeamData);
+        } else {
+            res.status(400).send({message: "You have not been selected for an interview"});
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+module.exports = { getInfo, getAllTeams, getOneTeam, getOPR, getSelectedTeam, changeSelectedTeamStatus };
