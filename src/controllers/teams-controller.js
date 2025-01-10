@@ -153,48 +153,52 @@ const getOPR = async (req, res) => {
     }
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////   APIS FOR TEAMS PORTAL BELOW   /////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-const filteredTeamsRef = db.collection("2025").doc("teams-selected-for-interview");
+const teamsSelectedRef = db.collection("2025").doc("teams-selected-for-interview");
 
+// validates the team is a team selected for an interview
 const validateSelectedTeam = async (teamID) => {
-    // first validate that the team is a selected team
-    const filteredTeamsDoc = await filteredTeamsRef.get();
-    const filteredTeams = filteredTeamsDoc.data();
+    const teamsSelectedDoc = await teamsSelectedRef.get();
+    const teamsSelected = teamsSelectedDoc.data();
 
-    let isSelectedTeam = false;
-    let selectedTeamData = {};
-
-    // console.log(filteredTeams);
-    
-    for (const [key, values] of Object.entries(filteredTeams)) {
-        if (key === teamID) {
-            isSelectedTeam = true;
-            selectedTeamData = {[key]: values};
-        }
+    if (teamsSelected[teamID]) {
+        return teamsSelected[teamID];
+    } else {
+        return undefined;
     }
-
-    return {isSelectedTeam, selectedTeamData};
 }
 
+// retrieves all information for a selected team
 const getSelectedTeam = async (req, res, next) => {
     try {
-        const { isSelectedTeam, selectedTeamData } = await validateSelectedTeam(req.params.teamID);
-        isSelectedTeam ? res.status(200).send(selectedTeamData) : res.status(400).send({message: "You have not been selected for an interview"});
+        const selectedTeamData = await validateSelectedTeam(req.params.teamID);
+        selectedTeamData ? res.status(200).send(selectedTeamData) : res.status(400).send({message: "You have not been selected for an interview"});
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
+// changing team "ready" status
 const changeSelectedTeamStatus = async (req, res, next) => {
+    const teamsSelectedDoc = await teamsSelectedRef.get();
+    const teamsSelected = teamsSelectedDoc.data();
+    const { teamID, newStatus } = req.body;
     try {
-        const { isSelectedTeam, selectedTeamData } = await validateSelectedTeam(req.params.teamID);
-        if (isSelectedTeam) {
-            const newStatus = req.body.newStatus;
-            Object.values(selectedTeamData)[0].ready = newStatus;
-            console.log(selectedTeamData);
-            filteredTeamsRef.update(selectedTeamData);
-            res.status(200).send(selectedTeamData);
+        const selectedTeamData = await validateSelectedTeam(req.params.teamID);
+        if (selectedTeamData) {
+            await teamsSelectedRef.update({
+                [teamID]: {
+                    ...teamsSelected[teamID],
+                    status: newStatus
+                }
+            })
+
+            console.log("Updated team status successfully");
+            res.sendStatus(200);
         } else {
             res.status(400).send({message: "You have not been selected for an interview"});
         }

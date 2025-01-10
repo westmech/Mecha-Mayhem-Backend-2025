@@ -31,8 +31,8 @@ const transformRegisteredTeams = (level, teams) => {
                     name: team.team_name,
                     affiliation: team.organization,
                     location: `${team.location.city}, ${team.location.region}`,
-                    level,
-                    ready: false
+                    id: team.id,
+                    level
                 };
 
                 temp[team.id] = teamData;
@@ -44,6 +44,5 @@ const transformRegisteredTeams = (level, teams) => {
     }
     return temp;
 };
-
 
 module.exports = { transformTeams, transformRegisteredTeams };

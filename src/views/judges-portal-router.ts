@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { getRegisteredTeams, getInterviewTeams } from "../controllers/judges-portal-controller";
+import { changeInterviewStatus, getRegisteredTeams, getSelectedTeams } from "../controllers/judges-portal-controller";
 const router = Router();
 
 // get all registered teams
 router.get("/registered-teams", getRegisteredTeams);
 
 // get teams that made it to interview stage
-router.get("/interview-teams", getInterviewTeams);
+router.get("/selected-teams", getSelectedTeams);
+
+router.post("/change-interview-status", changeInterviewStatus);
 
 export default router;

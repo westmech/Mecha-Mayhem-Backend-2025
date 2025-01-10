@@ -22,11 +22,12 @@ const filterTeamsForInterview = async () => {
         const allTeamsDoc = await allTeamsRef.get();
         const allTeams = allTeamsDoc.data();
 
-        // console.log(allTeams);
+        console.log(selectedTeams);
 
         for (const [key, value] of Object.entries(allTeams)) {
+            console.log(value.number);
             if (selectedTeams.has(value.number)) {
-                filteredTeams = {...filteredTeams, [key]: value};
+                filteredTeams = {...filteredTeams, [key]: {...value, status: "NOT RESPONDED", interviewComplete: false}};
             } 
         };
 

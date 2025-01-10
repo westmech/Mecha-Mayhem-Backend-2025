@@ -30,7 +30,7 @@ export const getRegisteredTeams = async (req: Request, res: Response, next: Next
 };
 
 // get teams that made it to interview stage
-export const getInterviewTeams = async (req: Request, res: Response, next: NextFunction) => {
+export const getSelectedTeams = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const teamsSelectedInterviewRef = db.collection("2025").doc("teams-selected-for-interview");
         const teamsSelectedInterviewDoc = await teamsSelectedInterviewRef.get();
@@ -40,6 +40,31 @@ export const getInterviewTeams = async (req: Request, res: Response, next: NextF
         res.send(teamsSelectedInterview);
     } catch (error) {
         console.log(`Error when fetching teams selected for interview: ${error}`);
+        res.status(400).send("Error");
+    }
+};
+
+// change interview completion 
+export const changeInterviewStatus = async (req: Request, res: Response, next: NextFunction) => {
+    const { teamID, newInterviewStatus } = req.body;
+    
+    try {
+        const teamsSelectedInterviewRef = db.collection("2025").doc("teams-selected-for-interview");
+        const teamsSelectedInterviewDoc = await teamsSelectedInterviewRef.get();
+        const teamsSelectedInterview = teamsSelectedInterviewDoc.data();
+
+        // update the db
+        await teamsSelectedInterviewRef.update({
+            [teamID]: {
+                ...teamsSelectedInterview[teamID],
+                interviewComplete: newInterviewStatus
+            }
+        })
+
+        console.log("Updated Document Successfully");
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(`Error when changing interview status for team ${teamID}: ${error}`);
         res.status(400).send("Error");
     }
 };
