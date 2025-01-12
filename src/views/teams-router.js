@@ -18,6 +18,6 @@ router.get("/opr/:teamNumber/:year/:division", getOPR);
 router.get("/get-selected-team/:teamID", getSelectedTeam);
 
 // for selected teams - change their status
-router.post("/selected-team-change-status/:teamID", changeSelectedTeamStatus);
+router.post("/selected-team-change-status", changeSelectedTeamStatus);
 
 module.exports = router;

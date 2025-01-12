@@ -164,6 +164,8 @@ const validateSelectedTeam = async (teamID) => {
     const teamsSelectedDoc = await teamsSelectedRef.get();
     const teamsSelected = teamsSelectedDoc.data();
 
+    console.log(teamsSelected[teamID]);
+
     if (teamsSelected[teamID]) {
         return teamsSelected[teamID];
     } else {
@@ -171,7 +173,7 @@ const validateSelectedTeam = async (teamID) => {
     }
 }
 
-// retrieves all information for a selected team
+// retrieves all information for a selected team by id
 const getSelectedTeam = async (req, res, next) => {
     try {
         const selectedTeamData = await validateSelectedTeam(req.params.teamID);
@@ -188,7 +190,7 @@ const changeSelectedTeamStatus = async (req, res, next) => {
     const teamsSelected = teamsSelectedDoc.data();
     const { teamID, newStatus } = req.body;
     try {
-        const selectedTeamData = await validateSelectedTeam(req.params.teamID);
+        const selectedTeamData = await validateSelectedTeam(teamID);
         if (selectedTeamData) {
             await teamsSelectedRef.update({
                 [teamID]: {
