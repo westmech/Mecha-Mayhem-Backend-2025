@@ -5,8 +5,8 @@ const AWS = require('aws-sdk');
 
 // Configure AWS with access keys and region from environment variables
 AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,     // Load from .env
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // Load from .env
+  accessKeyId: process.env.ACCESS_KEY_ID,     // Load from .env
+  secretAccessKey: process.env.SECRET_ACCESS_KEY, // Load from .env
   region: "us-east-2"              // Load from .env
 });
 
