@@ -17,17 +17,20 @@ const allowedOrigins = [
 // CORS
 const cors = require('cors');
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (for example, mobile apps, or curl requests)
-    if (!origin) return callback(null, true);
+  origin: '*',  // Allow all origins (for debugging purposes)
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+  // origin: function (origin, callback) {
+  //   // Allow requests with no origin (for example, mobile apps, or curl requests)
+  //   if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      const msg = `The CORS policy does not allow access from the specified Origin: ${origin}`;
-      return callback(new Error(msg), false);
-    }
-  }
+  //   if (allowedOrigins.includes(origin)) {
+  //     return callback(null, true);
+  //   } else {
+  //     const msg = `The CORS policy does not allow access from the specified Origin: ${origin}`;
+  //     return callback(new Error(msg), false);
+  //   }
+  // }
 }));
 
 const path = require('path');
