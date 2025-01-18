@@ -11,26 +11,23 @@ const allowedOrigins = [
   'https://mecha-mayhem-frontend.vercel.app',
   'https://mechamayhem.ca',
   'http://localhost:3000',
-  'https://judges-portal-caleb.d2bl7a5cpdmoza.amplifyapp.com'
+  'https://prod.d2bl7a5cpdmoza.amplifyapp.com'
 ];
 
 // CORS
 const cors = require('cors');
 app.use(cors({
-  origin: '*',  // Allow all origins (for debugging purposes)
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-  // origin: function (origin, callback) {
-  //   // Allow requests with no origin (for example, mobile apps, or curl requests)
-  //   if (!origin) return callback(null, true);
+  origin: function (origin, callback) {
+    // Allow requests with no origin (for example, mobile apps, or curl requests)
+    if (!origin) return callback(null, true);
 
-  //   if (allowedOrigins.includes(origin)) {
-  //     return callback(null, true);
-  //   } else {
-  //     const msg = `The CORS policy does not allow access from the specified Origin: ${origin}`;
-  //     return callback(new Error(msg), false);
-  //   }
-  // }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      const msg = `The CORS policy does not allow access from the specified Origin: ${origin}`;
+      return callback(new Error(msg), false);
+    }
+  }
 }));
 
 const path = require('path');
