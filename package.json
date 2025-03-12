@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "build": "docker-compose up --build",
+    "docker": "docker run mm25-image-test"
+
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.658.1",
