@@ -20,8 +20,6 @@ export const getRegisteredTeams = async (req: Request, res: Response, next: Next
             else validation[2]++;
         }
 
-        console.log(validation);
-
         res.send(allTeams);
     } catch (error) {
         console.log(`Error when fetching all registered teams: ${error}`);

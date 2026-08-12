@@ -1,15 +1,8 @@
 const dotenv = require('dotenv');
 dotenv.config();
-const admin = require('firebase-admin');
-const serviceAccount = require(process.env.FIREBASE_FILE_SCRIPTS_LOC);
+const { db } = require("../config/firebaseConfig");
 const {getAllRegisteredTeamsData} = require("../util/req/getTeamInfo");
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-});
-  
-// Initialize Firestore
-const db = admin.firestore();
 const allTeamsRef = db.collection("2025").doc("all-teams");
 
 const events = {
