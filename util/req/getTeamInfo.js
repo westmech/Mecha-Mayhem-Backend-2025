@@ -1,6 +1,7 @@
 const fs = require("fs").promises; // Using fs.promises for async file operations
 const path = require("path");
 const { concPagination } = require("./concPagination");
+const { ROBOTEVENTS_BASE } = require("./requestRobotEvents");
 const { yearToKeyMap } = require("../maps");
 const { transformTeams } = require("../transformers/transformTeams");
 
@@ -75,7 +76,7 @@ async function getTeamInfo(teamNumber, year) {
 async function getAllTeamsData(year) {
     try {
         const teamData = await concPagination(
-            `https://www.robotevents.com/api/v2/events/${yearToKeyMap[year]}/teams?myTeams=false`
+            `${ROBOTEVENTS_BASE}/events/${yearToKeyMap[year]}/teams?myTeams=false`
         );
         return transformTeams(teamData);
     } catch (error) {

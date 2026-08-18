@@ -1,7 +1,7 @@
 const { transformMatches } = require("../util/transformers/transformMatches");
-const { yearToKeyMap, gradeToKeyMap, divToKeyMap } = require("../util/maps");
+const { yearToKeyMap, gradeToKeyMap } = require("../util/maps");
 const { getAllTeamsData, getTeamInfo } = require("../util/req/getTeamInfo");
-const { requestRobotEvents } = require("../util/req/requestRobotEvents");
+const { requestRobotEvents, ROBOTEVENTS_BASE } = require("../util/req/requestRobotEvents");
 
 // route to retrieve team information for a season
 const getInfo = async (req, res) => {
@@ -11,18 +11,18 @@ const getInfo = async (req, res) => {
 
     // construct the URL based on the team number, grade, and year
     try {
-        const response = requestRobotEvents(
-            `https://www.robotevents.com/api/v2/teams?number%5B%5D=${teamNumber}${gradeToKeyMap[grade]}`
+        const response = await requestRobotEvents(
+            `${ROBOTEVENTS_BASE}/teams?number%5B%5D=${teamNumber}${gradeToKeyMap[grade]}`
         );
 
-        const data = (await response).data.data[0];
-        
+        const data = response.data.data[0];
+
         if (data !== undefined) {
             const team_id = data.id;
             const team_name = data.team_name;
 
-            const matchRes = requestRobotEvents(
-                `https://www.robotevents.com/api/v2/teams/${team_id}/matches?event%5B%5D=${yearToKeyMap[year]}`
+            const matchRes = await requestRobotEvents(
+                `${ROBOTEVENTS_BASE}/teams/${team_id}/matches?event%5B%5D=${yearToKeyMap[year]}`
             );
             const matchData = matchRes.data.data[0];
             if (matchData !== undefined) {
@@ -34,8 +34,8 @@ const getInfo = async (req, res) => {
                     team_div
                 );
 
-                const rankingRes = requestRobotEvents(
-                    `https://www.robotevents.com/api/v2/teams/${team_id}/rankings?event%5B%5D=${yearToKeyMap[year]}`
+                const rankingRes = await requestRobotEvents(
+                    `${ROBOTEVENTS_BASE}/teams/${team_id}/rankings?event%5B%5D=${yearToKeyMap[year]}`
                 );
                 const rankData = rankingRes.data.data[0]
 
@@ -106,50 +106,7 @@ const getOneTeam = async (req, res) => {
 
 // retrieve a teams OPR for a season
 const getOPR = async (req, res) => {
-    const teamNumber = req.params.teamNumber;
-    const year = req.params.year;
-    const div = req.params.division;
-
-    // construct the URL based on the team number, grade, and year
-    try {
-        res.json(
-            // await concPagination(
-            //     `https://www.robotevents.com/api/v2/events/${yearToKeyMap[year]}/divisions/${divToKeyMap[div]}/rankings`
-            // )
-        );
-        // const url = `https://www.robotevents.com/api/v2/events/${yearToKeyMap[year]}/divisions/${divToKeyMap[div]}/rankings`;
-        // const response = await axios.get(url, {
-        //     headers: {
-        //         Authorization: `Bearer ${apiKey}`,
-        //     },
-        // });
-
-        // // console.log(response.data.data)
-        // if (response.data.data !== undefined) {
-        //     // getting list of teams in a div to calculate OPR
-        //     const teamNames = response.data.data.map(
-        //         (entry) => entry.team.name
-        //     );
-        //     console.log(teamNames);
-
-        //     //fetching list of stringified matches
-        //     const matchesRef = db
-        //         .collection("calc")
-        //         .doc("2024")
-        //         .collection("prairies")
-        //         .doc("matches");
-        //     const doc = await matchesRef.get();
-        //     console.log(doc.data());
-
-        //     calcOPR(doc.data().matches, teamNames);
-        //     res.json({ error: "calced OPR" });
-        // } else {
-        //     res.status(404).json({ error: "Event and Div not found" });
-        // }
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
+    res.status(501).json({ error: "OPR is not implemented" });
 };
 
 module.exports = { getInfo, getAllTeams, getOneTeam, getOPR };

@@ -1,6 +1,7 @@
 const { transformMatches } = require("../util/transformers/transformMatches");
 const { yearToKeyMap, divToKeyMap } = require("../util/maps");
-const { paginationHelper } = require("../util/req/concPagination");
+const { paginationHelper, concPagination } = require("../util/req/concPagination");
+const { ROBOTEVENTS_BASE } = require("../util/req/requestRobotEvents");
 
 const streamAllMatches = async (req, res) => {
     const year = req.params.year;
@@ -33,7 +34,7 @@ const streamAllMatches = async (req, res) => {
     };
 
     // api endpoint
-    const url = `https://www.robotevents.com/api/v2/events/${yearToKeyMap[year]}/divisions/${divToKeyMap[div]}/matches?round%5B%5D=${curRound}`;
+    const url = `${ROBOTEVENTS_BASE}/events/${yearToKeyMap[year]}/divisions/${divToKeyMap[div]}/matches?round%5B%5D=${curRound}`;
 
     try {
         // Getting streams
@@ -101,10 +102,8 @@ const getAllMatches = async (req, res) => {
         for (const nextRoundType of orderOfIteration) {
             // Request from RobotEvents API
             const matches = await concPagination(
-                `https://www.robotevents.com/api/v2/events/${yearToKeyMap[year]}/divisions/${divToKeyMap[div]}/matches?round%5B%5D=${nextRoundType}`
+                `${ROBOTEVENTS_BASE}/events/${yearToKeyMap[year]}/divisions/${divToKeyMap[div]}/matches?round%5B%5D=${nextRoundType}`
             );
-            
-            console.log(matches)
 
             if (matches !== undefined && matches !== null) {
                 for (const match of matches) {
